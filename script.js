@@ -165,8 +165,7 @@ function initScrollAnimations() {
           entry.target.classList.add('visible');
         }
       });
-    },
-    {
+    }, {
       threshold: 0.2,
     }
   );
@@ -185,7 +184,10 @@ function initAnimatedGrid() {
   const squareSize = 40;
   const speed = 0.5;
   const borderColor = 'rgba(30, 42, 71, 0.5)';
-  let gridOffset = { x: 0, y: 0 };
+  let gridOffset = {
+    x: 0,
+    y: 0
+  };
 
   const resizeCanvas = () => {
     const parent = canvas.parentElement;
@@ -226,7 +228,10 @@ function initAnimatedGrid() {
 let uploadedFiles = [];
 let sofData = [];
 let filteredData = [];
-let currentSort = { field: null, direction: 'asc' };
+let currentSort = {
+  field: null,
+  direction: 'asc'
+};
 
 function initTheme() {
   document.documentElement.setAttribute('data-theme', 'dark');
@@ -331,70 +336,70 @@ function formatFileSize(bytes) {
 }
 
 async function processFiles(event) {
-    event.preventDefault();
-    if (uploadedFiles.length === 0) {
-        alert('Please select files to process.');
-        return;
-    }
-    const processButton = document.getElementById('processButton');
-    const buttonTextSpan = processButton.querySelector('span');
-    const progressSection = document.getElementById('progressSection');
-    const progressFill = document.getElementById('progressFill');
-    const progressText = document.getElementById('progressText');
-    const progressPercentage = document.getElementById('progressPercentage');
-    const forceRepaint = (element) => element.offsetHeight;
-    processButton.disabled = true;
-    progressSection.style.display = 'block';
-    progressFill.style.transition = 'none';
-    progressFill.style.width = '0%';
-    progressPercentage.textContent = '0%';
-    forceRepaint(progressFill);
-    progressFill.style.transition = 'width 0.5s ease-in-out';
-    buttonTextSpan.textContent = 'Uploading Files...';
-    progressText.textContent = 'Uploading files to the server...';
+  event.preventDefault();
+  if (uploadedFiles.length === 0) {
+    alert('Please select files to process.');
+    return;
+  }
+  const processButton = document.getElementById('processButton');
+  const buttonTextSpan = processButton.querySelector('span');
+  const progressSection = document.getElementById('progressSection');
+  const progressFill = document.getElementById('progressFill');
+  const progressText = document.getElementById('progressText');
+  const progressPercentage = document.getElementById('progressPercentage');
+  const forceRepaint = (element) => element.offsetHeight;
+  processButton.disabled = true;
+  progressSection.style.display = 'block';
+  progressFill.style.transition = 'none';
+  progressFill.style.width = '0%';
+  progressPercentage.textContent = '0%';
+  forceRepaint(progressFill);
+  progressFill.style.transition = 'width 0.5s ease-in-out';
+  buttonTextSpan.textContent = 'Uploading Files...';
+  progressText.textContent = 'Uploading files to the server...';
+  setTimeout(() => {
+    progressFill.style.width = '40%';
+    progressPercentage.textContent = '40%';
+  }, 100);
+  const formData = new FormData();
+  uploadedFiles.forEach(file => formData.append('files', file));
+  try {
+    const processPromise = fetch('https://project-backend-x93o.onrender.com/process', {
+      method: 'POST',
+      body: formData,
+    });
     setTimeout(() => {
-        progressFill.style.width = '40%';
-        progressPercentage.textContent = '40%';
-    }, 100);
-    const formData = new FormData();
-    uploadedFiles.forEach(file => formData.append('files', file));
-    try {
-        const processPromise = fetch('/process', {
-            method: 'POST',
-            body: formData,
-        });
-        setTimeout(() => {
-            buttonTextSpan.textContent = 'Processing Files...';
-            progressText.textContent = 'AI is processing your documents...';
-            progressFill.style.width = '90%';
-            progressPercentage.textContent = '90%';
-        }, 1500);
-        const response = await processPromise;
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.detail || 'Server processing failed.');
-        }
-        const processedData = await response.json();
-        buttonTextSpan.textContent = 'Success!';
-        progressText.textContent = 'All files processed successfully!';
-        progressFill.style.width = '100%';
-        progressPercentage.textContent = '100%';
-        progressSection.style.background = 'linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(16, 185, 129, 0.1))';
-        progressFill.style.background = 'linear-gradient(135deg, #059669, #10B981)';
-        setTimeout(() => {
-            localStorage.setItem('sofData', JSON.stringify(processedData));
-            window.location.href = '/data';
-        }, 1000);
-    } catch (error) {
-        console.error('Error processing files:', error);
-        progressFill.style.width = '100%';
-        progressPercentage.textContent = 'Error';
-        progressText.textContent = `An error occurred: ${error.message}`;
-        progressSection.style.background = 'linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(239, 68, 68, 0.1))';
-        progressFill.style.background = 'linear-gradient(135deg, #DC2626, #EF4444)';
-        buttonTextSpan.textContent = 'Process Files';
-        processButton.disabled = false;
+      buttonTextSpan.textContent = 'Processing Files...';
+      progressText.textContent = 'AI is processing your documents...';
+      progressFill.style.width = '90%';
+      progressPercentage.textContent = '90%';
+    }, 1500);
+    const response = await processPromise;
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || 'Server processing failed.');
     }
+    const processedData = await response.json();
+    buttonTextSpan.textContent = 'Success!';
+    progressText.textContent = 'All files processed successfully!';
+    progressFill.style.width = '100%';
+    progressPercentage.textContent = '100%';
+    progressSection.style.background = 'linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(16, 185, 129, 0.1))';
+    progressFill.style.background = 'linear-gradient(135deg, #059669, #10B981)';
+    setTimeout(() => {
+      localStorage.setItem('sofData', JSON.stringify(processedData));
+      window.location.href = '/data';
+    }, 1000);
+  } catch (error) {
+    console.error('Error processing files:', error);
+    progressFill.style.width = '100%';
+    progressPercentage.textContent = 'Error';
+    progressText.textContent = `An error occurred: ${error.message}`;
+    progressSection.style.background = 'linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(239, 68, 68, 0.1))';
+    progressFill.style.background = 'linear-gradient(135deg, #DC2626, #EF4444)';
+    buttonTextSpan.textContent = 'Process Files';
+    processButton.disabled = false;
+  }
 }
 
 function initDataPage() {
@@ -434,18 +439,18 @@ function formatDateTime(date, time) {
 }
 
 function getEventCategoryClass(eventType) {
-    if (!eventType) return 'event-row-operational';
-    const type = eventType.toLowerCase();
-    if (type.includes('cargo') || type.includes('discharge') || type.includes('loading') || type.includes('bunkering')) {
-        return 'event-row-productive';
-    }
-    if (type.includes('delay') || type.includes('stoppage') || type.includes('rain') || type.includes('breakdown')) {
-        return 'event-row-delay';
-    }
-    if (type.includes('idle') || type.includes('wait') || type.includes('standby')) {
-        return 'event-row-idle';
-    }
-    return 'event-row-operational';
+  if (!eventType) return 'event-row-operational';
+  const type = eventType.toLowerCase();
+  if (type.includes('cargo') || type.includes('discharge') || type.includes('loading') || type.includes('bunkering')) {
+    return 'event-row-productive';
+  }
+  if (type.includes('delay') || type.includes('stoppage') || type.includes('rain') || type.includes('breakdown')) {
+    return 'event-row-delay';
+  }
+  if (type.includes('idle') || type.includes('wait') || type.includes('standby')) {
+    return 'event-row-idle';
+  }
+  return 'event-row-operational';
 }
 
 function displayData() {
@@ -577,112 +582,125 @@ function displayData() {
 }
 
 function setupViewToggles(uniqueId) {
-    const tableViewBtn = document.getElementById(`tableViewBtn-${uniqueId}`);
-    const timelineViewBtn = document.getElementById(`timelineViewBtn-${uniqueId}`);
-    const tableContainer = document.getElementById(`events-table-container-${uniqueId}`);
-    const timelineContainer = document.getElementById(`timeline-view-container-${uniqueId}`);
+  const tableViewBtn = document.getElementById(`tableViewBtn-${uniqueId}`);
+  const timelineViewBtn = document.getElementById(`timelineViewBtn-${uniqueId}`);
+  const tableContainer = document.getElementById(`events-table-container-${uniqueId}`);
+  const timelineContainer = document.getElementById(`timeline-view-container-${uniqueId}`);
 
-    if (!tableViewBtn || !timelineViewBtn || !tableContainer || !timelineContainer) return;
+  if (!tableViewBtn || !timelineViewBtn || !tableContainer || !timelineContainer) return;
 
-    tableViewBtn.addEventListener('click', () => {
-        tableContainer.style.display = 'block';
-        timelineContainer.style.display = 'none';
-        tableViewBtn.classList.add('active');
-        timelineViewBtn.classList.remove('active');
-    });
+  tableViewBtn.addEventListener('click', () => {
+    tableContainer.style.display = 'block';
+    timelineContainer.style.display = 'none';
+    tableViewBtn.classList.add('active');
+    timelineViewBtn.classList.remove('active');
+  });
 
-    timelineViewBtn.addEventListener('click', () => {
-        tableContainer.style.display = 'none';
-        timelineContainer.style.display = 'block';
-        timelineViewBtn.classList.add('active');
-        tableViewBtn.classList.remove('active');
-    });
+  timelineViewBtn.addEventListener('click', () => {
+    tableContainer.style.display = 'none';
+    timelineContainer.style.display = 'block';
+    timelineViewBtn.classList.add('active');
+    tableViewBtn.classList.remove('active');
+  });
 }
 
 function parseSofDate(dateStr, timeStr) {
-    if (!dateStr || !timeStr) return null;
+  if (!dateStr || !timeStr) return null;
 
-    const months = { 'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5, 'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11 };
-    const dateParts = dateStr.split('-');
-    if (dateParts.length !== 3) return null;
+  const months = {
+    'Jan': 0,
+    'Feb': 1,
+    'Mar': 2,
+    'Apr': 3,
+    'May': 4,
+    'Jun': 5,
+    'Jul': 6,
+    'Aug': 7,
+    'Sep': 8,
+    'Oct': 9,
+    'Nov': 10,
+    'Dec': 11
+  };
+  const dateParts = dateStr.split('-');
+  if (dateParts.length !== 3) return null;
 
-    const monthStr = dateParts[1];
-    const monthKey = monthStr.charAt(0).toUpperCase() + monthStr.slice(1).toLowerCase();
+  const monthStr = dateParts[1];
+  const monthKey = monthStr.charAt(0).toUpperCase() + monthStr.slice(1).toLowerCase();
 
-    const day = parseInt(dateParts[0], 10);
-    const month = months[monthKey];
-    let year = parseInt(dateParts[2], 10);
+  const day = parseInt(dateParts[0], 10);
+  const month = months[monthKey];
+  let year = parseInt(dateParts[2], 10);
 
-    if (year < 100) {
-        year += 2000;
-    }
+  if (year < 100) {
+    year += 2000;
+  }
 
-    const timeParts = timeStr.split(':');
-    if (timeParts.length !== 2) return null;
+  const timeParts = timeStr.split(':');
+  if (timeParts.length !== 2) return null;
 
-    const hours = parseInt(timeParts[0], 10);
-    const minutes = parseInt(timeParts[1], 10);
+  const hours = parseInt(timeParts[0], 10);
+  const minutes = parseInt(timeParts[1], 10);
 
-    if (isNaN(day) || month === undefined || isNaN(year) || isNaN(hours) || isNaN(minutes)) {
-        return null;
-    }
-    return new Date(Date.UTC(year, month, day, hours, minutes));
+  if (isNaN(day) || month === undefined || isNaN(year) || isNaN(hours) || isNaN(minutes)) {
+    return null;
+  }
+  return new Date(Date.UTC(year, month, day, hours, minutes));
 }
 
 function renderTimeline(events, uniqueId, tooltip) {
-    const ganttContainer = document.querySelector(`#gantt-chart-${uniqueId}`);
-    if (!ganttContainer) return;
+  const ganttContainer = document.querySelector(`#gantt-chart-${uniqueId}`);
+  if (!ganttContainer) return;
 
-    const validEvents = events
-        .map(e => ({
-            ...e,
-            startDate: parseSofDate(e.start_date, e.start_time),
-            endDate: parseSofDate(e.end_date, e.end_time)
-        }))
-        .filter(e => e.startDate)
-        .map(e => {
-            if (!e.endDate || e.endDate <= e.startDate) {
-                e.endDate = new Date(e.startDate.getTime() + (2 * 60 * 60 * 1000));
-            }
-            return e;
-        });
+  const validEvents = events
+    .map(e => ({
+      ...e,
+      startDate: parseSofDate(e.start_date, e.start_time),
+      endDate: parseSofDate(e.end_date, e.end_time)
+    }))
+    .filter(e => e.startDate)
+    .map(e => {
+      if (!e.endDate || e.endDate <= e.startDate) {
+        e.endDate = new Date(e.startDate.getTime() + (2 * 60 * 60 * 1000));
+      }
+      return e;
+    });
 
-    if (validEvents.length === 0) {
-        ganttContainer.innerHTML = '<p style="color: var(--text-secondary); padding: 1rem;">No valid time data to display.</p>';
-        return;
-    }
+  if (validEvents.length === 0) {
+    ganttContainer.innerHTML = '<p style="color: var(--text-secondary); padding: 1rem;">No valid time data to display.</p>';
+    return;
+  }
 
-    const allDates = validEvents.flatMap(e => [e.startDate, e.endDate]);
-    let minDate = new Date(Math.min.apply(null, allDates));
-    let maxDate = new Date(Math.max.apply(null, allDates));
+  const allDates = validEvents.flatMap(e => [e.startDate, e.endDate]);
+  let minDate = new Date(Math.min.apply(null, allDates));
+  let maxDate = new Date(Math.max.apply(null, allDates));
 
-    minDate.setUTCHours(0, 0, 0, 0);
-    maxDate.setUTCHours(23, 59, 59, 999);
+  minDate.setUTCHours(0, 0, 0, 0);
+  maxDate.setUTCHours(23, 59, 59, 999);
 
-    const totalDuration = maxDate.getTime() - minDate.getTime();
+  const totalDuration = maxDate.getTime() - minDate.getTime();
 
-    // Build Header
-    let daysHtml = '';
-    let hoursHtml = '';
-    const tempDate = new Date(minDate);
+  // Build Header
+  let daysHtml = '';
+  let hoursHtml = '';
+  const tempDate = new Date(minDate);
 
-    while (tempDate <= maxDate) {
-        daysHtml += `<div class="gantt-day">${tempDate.getUTCDate()} ${tempDate.toLocaleString('default', { month: 'short', timeZone: 'UTC' })}</div>`;
-        hoursHtml += `<div class="gantt-hour">00</div><div class="gantt-hour">12</div>`;
-        tempDate.setUTCDate(tempDate.getUTCDate() + 1);
-    }
+  while (tempDate <= maxDate) {
+    daysHtml += `<div class="gantt-day">${tempDate.getUTCDate()} ${tempDate.toLocaleString('default', { month: 'short', timeZone: 'UTC' })}</div>`;
+    hoursHtml += `<div class="gantt-hour">00</div><div class="gantt-hour">12</div>`;
+    tempDate.setUTCDate(tempDate.getUTCDate() + 1);
+  }
 
-    // Build Rows
-    let labelsHtml = '';
-    let bodyHtml = '';
-    validEvents.forEach(event => {
-        labelsHtml += `<div class="gantt-row-label">${event.event_type}</div>`;
+  // Build Rows
+  let labelsHtml = '';
+  let bodyHtml = '';
+  validEvents.forEach(event => {
+    labelsHtml += `<div class="gantt-row-label">${event.event_type}</div>`;
 
-        const left = ((event.startDate.getTime() - minDate.getTime()) / totalDuration) * 100;
-        const width = ((event.endDate.getTime() - event.startDate.getTime()) / totalDuration) * 100;
-        const categoryClass = getEventCategoryClass(event.event_type).replace('event-row-', 'bar-');
+    const left = ((event.startDate.getTime() - minDate.getTime()) / totalDuration) * 100;
+    const width = ((event.endDate.getTime() - event.startDate.getTime()) / totalDuration) * 100;
+    const categoryClass = getEventCategoryClass(event.event_type).replace('event-row-', 'bar-');
 
-        const barHtml = `
+    const barHtml = `
             <div class="gantt-bar ${categoryClass}"
                  style="left: ${left}%; width: ${width}%;"
                  data-event-name="${event.event_type}"
@@ -691,52 +709,52 @@ function renderTimeline(events, uniqueId, tooltip) {
                  data-remarks="${event.remarks || 'No remarks.'}"
             ></div>`;
 
-        bodyHtml += `<div class="gantt-row"><div class="gantt-row-bars">${barHtml}</div></div>`;
-    });
+    bodyHtml += `<div class="gantt-row"><div class="gantt-row-bars">${barHtml}</div></div>`;
+  });
 
-    ganttContainer.innerHTML = `
-        <div class="custom-gantt-chart">
-            <div class="gantt-labels">
-                <div class="gantt-header-label">Event</div>
-                ${labelsHtml}
-            </div>
-            <div class="gantt-timeline">
-                <div class="gantt-header-timeline">
-                    <div class="gantt-days-row">${daysHtml}</div>
-                    <div class="gantt-hours-row">${hoursHtml}</div>
-                </div>
-                <div class="gantt-body">${bodyHtml}</div>
-            </div>
-        </div>
-    `;
+  ganttContainer.innerHTML = `
+      <div class="custom-gantt-chart">
+          <div class="gantt-labels">
+              <div class="gantt-header-label">Event</div>
+              ${labelsHtml}
+          </div>
+          <div class="gantt-timeline">
+              <div class="gantt-header-timeline">
+                  <div class="gantt-days-row">${daysHtml}</div>
+                  <div class="gantt-hours-row">${hoursHtml}</div>
+              </div>
+              <div class="gantt-body">${bodyHtml}</div>
+          </div>
+      </div>
+  `;
 
-    // Tooltip Logic
-    ganttContainer.addEventListener('mouseover', (e) => {
-        if (e.target.classList.contains('gantt-bar')) {
-            const data = e.target.dataset;
-            tooltip.innerHTML = `
-                <div class="gantt-tooltip-header">${data.eventName}</div>
-                <div class="gantt-tooltip-body">
-                    <p><strong>From:</strong> ${data.startDate}</p>
-                    <p><strong>To:</strong> ${data.endDate}</p>
-                    <p class="gantt-tooltip-remarks"><strong>Remarks:</strong> ${data.remarks}</p>
-                </div>`;
-            tooltip.style.display = 'block';
-        }
-    });
+  // Tooltip Logic
+  ganttContainer.addEventListener('mouseover', (e) => {
+    if (e.target.classList.contains('gantt-bar')) {
+      const data = e.target.dataset;
+      tooltip.innerHTML = `
+              <div class="gantt-tooltip-header">${data.eventName}</div>
+              <div class="gantt-tooltip-body">
+                  <p><strong>From:</strong> ${data.startDate}</p>
+                  <p><strong>To:</strong> ${data.endDate}</p>
+                  <p class="gantt-tooltip-remarks"><strong>Remarks:</strong> ${data.remarks}</p>
+              </div>`;
+      tooltip.style.display = 'block';
+    }
+  });
 
-    ganttContainer.addEventListener('mousemove', (e) => {
-        if (tooltip.style.display === 'block') {
-            tooltip.style.left = `${e.clientX + 15}px`;
-            tooltip.style.top = `${e.clientY + 15}px`;
-        }
-    });
+  ganttContainer.addEventListener('mousemove', (e) => {
+    if (tooltip.style.display === 'block') {
+      tooltip.style.left = `${e.clientX + 15}px`;
+      tooltip.style.top = `${e.clientY + 15}px`;
+    }
+  });
 
-    ganttContainer.addEventListener('mouseout', (e) => {
-        if (e.target.classList.contains('gantt-bar')) {
-            tooltip.style.display = 'none';
-        }
-    });
+  ganttContainer.addEventListener('mouseout', (e) => {
+    if (e.target.classList.contains('gantt-bar')) {
+      tooltip.style.display = 'none';
+    }
+  });
 }
 
 function exportData(format) {
@@ -799,7 +817,9 @@ function exportJSON(data, filename) {
 }
 
 function downloadFile(content, filename, contentType) {
-  const blob = new Blob([content], { type: contentType });
+  const blob = new Blob([content], {
+    type: contentType
+  });
   const url = window.URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
